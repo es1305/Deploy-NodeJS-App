@@ -1,0 +1,52 @@
+---
+- name: Install a list of packages
+  apt:
+    pkg:
+    - curl
+    - git
+    - nodejs
+    update_cache: yes
+
+- name: Clone repository
+  git:
+    repo: "{{ git_src }}"
+    dest: "{{ git_dst }}"
+    single_branch: yes
+    version: main
+    accept_hostkey: yes
+
+- name: Install nvm
+  shell: >
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+  args:
+    creates: ~/.nvm/nvm.sh
+
+- name: Install required node version
+  command: /bin/bash -c "source ~/.nvm/nvm.sh && nvm install 12.0 && nvm alias default 12.0"
+  args:
+    creates: ~/.nvm/alias
+
+- name: Install packages based on package.json using the npm
+  command: /bin/bash -c "source ~/.nvm/nvm.sh && npm install"
+  args:
+    chdir: "{{ git_dst }}"
+    creates: "{{ git_dst }}/node_modules/"
+
+- name: Build node app
+  command: /bin/bash -c "source ~/.nvm/nvm.sh && npm run build"
+  args:
+    chdir: "{{ git_dst }}"
+    creates: "{{ git_dst }}/build/"
+
+- name: Creates directory for web app
+  file:
+    path: /var/www/{{ vhost }}
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy folder to web app directory
+  command: rsync -a "{{ git_dst }}/build/" "/var/www/{{ vhost }}/"
+  args:
+    creates: "/var/www/{{ vhost }}/en/index.html"

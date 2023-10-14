@@ -1,0 +1,3 @@
+---
+git_src: https://github.com/nodejs/nodejs.org
+git_dst: ~/nodejs.org
