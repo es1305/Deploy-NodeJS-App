@@ -1,4 +1,4 @@
-Конфигурационный файл [Terraform](https://www.terraform.io) и роли [Ansible](https://www.ansible.com) для выполнения задания **"DEV 08: Деплой приложений. NodeJS".**
+Конфигурационный файл [Terraform](https://www.terraform.io) и роли [Ansible](https://www.ansible.com) для выполнения задания **"Деплой приложений. NodeJS".**
 
 Для запуска необходим файл `variables.tf` типа
 ```
